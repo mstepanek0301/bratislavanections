@@ -1,0 +1,137 @@
+<!DOCTYPE HTML>
+<html lang="sk">
+<head>
+	<title>Bratislavanections</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="/bratislavanections/style.css">
+</head>
+<body onclick="">
+	<h1><span class="highlight">Bratislava</span>nections</h1>
+	<p>
+		Tieto fotky sú zo 4 mestských častí Bratislavy a z každej mestskej časti sú 4 fotky.
+		Tvojou úlohou je označiť tieto štvorice a priradiť ich k mestským častiam.
+		Fotky sú z Google Street View.
+	</p>
+	<p><span class="disabled">&larr;</span> číslo 1 <a href="..">&rarr;</a></p>
+	<form action="javascript:0;" onsubmit="handleSubmit(this)" oninput="handleInput(event)">
+		<label>
+			Ktorá je to mestská časť?
+			<select id="district">
+				<option value="cu">Čunovo</option>
+				<option value="de">Devín</option>
+				<option value="dv">Devínska Nová Ves</option>
+				<option value="du">Dúbravka</option>
+				<option value="ja">Jarovce</option>
+				<option value="kv">Karlova Ves</option>
+				<option value="la">Lamač</option>
+				<option value="nm">Nové Mesto</option>
+				<option value="pe">Petržalka</option>
+				<option value="pb">Podunajské Biskupice</option>
+				<option value="ra">Rača</option>
+				<option value="rs">Rusovce</option>
+				<option value="ru">Ružinov</option>
+				<option value="sm">Staré Mesto</option>
+				<option value="va">Vajnory</option>
+				<option value="vr">Vrakuňa</option>
+				<option value="zb">Záhorská Bystrica</option>
+			</select>
+		</label>
+		<input type="submit" value="Hádaj" id="submit" disabled>
+		<div id="solved">
+		</div>
+		<div id="tiles">
+			<label class="tile" id="tile-0">
+				<input name="0" type="checkbox">
+				<img src="01_thumb.jpg">
+				<a target="blank" href="01.jpg">↗</a>
+			</label><label class="tile" id="tile-1">
+				<input name="1" type="checkbox">
+				<img src="02_thumb.jpg">
+				<a target="blank" href="02.jpg">↗</a>
+			</label><label class="tile" id="tile-2">
+				<input name="2" type="checkbox">
+				<img src="03_thumb.jpg">
+				<a target="blank" href="03.jpg">↗</a>
+			</label><label class="tile" id="tile-3">
+				<input name="3" type="checkbox">
+				<img src="04_thumb.jpg">
+				<a target="blank" href="04.jpg">↗</a>
+			</label><label class="tile" id="tile-4">
+				<input name="4" type="checkbox">
+				<img src="05_thumb.jpg">
+				<a target="blank" href="05.jpg">↗</a>
+			</label><label class="tile" id="tile-5">
+				<input name="5" type="checkbox">
+				<img src="06_thumb.jpg">
+				<a target="blank" href="06.jpg">↗</a>
+			</label><label class="tile" id="tile-6">
+				<input name="6" type="checkbox">
+				<img src="07_thumb.jpg">
+				<a target="blank" href="07.jpg">↗</a>
+			</label><label class="tile" id="tile-7">
+				<input name="7" type="checkbox">
+				<img src="08_thumb.jpg">
+				<a target="blank" href="08.jpg">↗</a>
+			</label><label class="tile" id="tile-8">
+				<input name="8" type="checkbox">
+				<img src="09_thumb.jpg">
+				<a target="blank" href="09.jpg">↗</a>
+			</label><label class="tile" id="tile-9">
+				<input name="9" type="checkbox">
+				<img src="10_thumb.jpg">
+				<a target="blank" href="10.jpg">↗</a>
+			</label><label class="tile" id="tile-10">
+				<input name="10" type="checkbox">
+				<img src="11_thumb.jpg">
+				<a target="blank" href="11.jpg">↗</a>
+			</label><label class="tile" id="tile-11">
+				<input name="11" type="checkbox">
+				<img src="12_thumb.jpg">
+				<a target="blank" href="12.jpg">↗</a>
+			</label><label class="tile" id="tile-12">
+				<input name="12" type="checkbox">
+				<img src="13_thumb.jpg">
+				<a target="blank" href="13.jpg">↗</a>
+			</label><label class="tile" id="tile-13">
+				<input name="13" type="checkbox">
+				<img src="14_thumb.jpg">
+				<a target="blank" href="14.jpg">↗</a>
+			</label><label class="tile" id="tile-14">
+				<input name="14" type="checkbox">
+				<img src="15_thumb.jpg">
+				<a target="blank" href="15.jpg">↗</a>
+			</label><label class="tile" id="tile-15">
+				<input name="15" type="checkbox">
+				<img src="16_thumb.jpg">
+				<a target="blank" href="16.jpg">↗</a>
+			</label>
+		</div>
+	</form>
+</body>
+<script>
+	// [id] -> difficulty (0 = easy, 3 = hard)
+	var puzzleGroups = [2, 3, 3, 1, 0, 0, 2, 3, 2, 0, 1, 1, 1, 3, 2, 0];
+	// [difficulty] -> district (2-letter string)
+	var puzzleDistricts = ["sm", "kv", "ra", "pe"];
+	var googleMapsIds = [
+		"A49KwSnPFpjPy5xs7",
+		"jV7TeHgWrhx9Eir3A",
+		"3k5PhcYCCrMJ2Dum8",
+		"u4Piyi1u57baJRGg8",
+		"RwFoGKd9GXGdg94R7",
+		"ZfRj43NQ6aTeFDtV8",
+		"UgjzhtM9sAgkfrjD7",
+		"Smu44sKVE6y2r7hQ9",
+		"mt3coW9nkvtNfsG27",
+		"zmrZohtvup7wgDC1A",
+		"bSKrnpWDphv19J6N9",
+		"PKWJhoxpuEXyrHbK7",
+		"uZW8fqCnrVKQG9yeA",
+		"1jxtns1BE5MFsGAP7",
+		"oNaZRwkYnsvCH5iMA",
+		"xJEGCoLrbSssTVnG8",
+	];
+</script>
+<script src="/bratislavanections/script.js"></script>
+</html>
