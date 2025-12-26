@@ -27,8 +27,8 @@ a {
 	text-decoration: none;
 }
 
-.disabled {
-	color: gray;
+#district-form {
+	display: none;
 }
 
 #tiles {

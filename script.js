@@ -11,12 +11,20 @@ for (
 	districts[option.value] = option.innerHTML;
 }
 var difficulties = ["ľahké", "stredné", "ťažké", "expert"];
+var puzzleNumber = document.getElementById("puzzle-number").innerHTML;
 
 var selectedTileCount = 0;
 var solvedDistrictCount = 0;
+var foundGroup = null;
 var submitButton = document.getElementById("submit");
+var districtForm = document.getElementById("district-form");
 
 function handleInput(event) {
+	if (foundGroup !== null) {
+		foundGroup = null;
+		districtForm.style = "display: none";
+		submitButton.style = "display: inline-block";
+	}
 	if (event.target.tagName !== "INPUT") return;
 	if (event.target.checked) {
 		if (selectedTileCount === 4) event.target.checked = false;
@@ -46,40 +54,53 @@ function handleSubmit(form) {
 		if (count > maxGroupCount) maxGroupCount = count;
 	}
 	if (maxGroupCount === 4) {
-		var selectedDistrict = puzzleDistricts[puzzleGroups[selectedTiles[0]]]
-		if (form.elements["district"].value === selectedDistrict) {
-			var solvedContainer = document.getElementById("solved");
-			var solvedContent = [
-				"<p>", districts[selectedDistrict], " (",
-				difficulties[puzzleGroups[selectedTiles[0]]], ")</p>"
-			];
-			for (var i = 0; i < 4; i++) {
-				var tile = selectedTiles[i];
-				document.getElementById("tile-" + tile.toString()).remove();
-				solvedContent.push('<div class="tile"><img src="');
-				solvedContent.push(toTwoDigits(tile + 1));
-				solvedContent.push('_thumb.jpg"><div class="tile-buttons"><a target="blank" href="');
-				solvedContent.push(toTwoDigits(tile + 1));
-				solvedContent.push('.jpg">↗</a> <a target="blank" href="https://maps.app.goo.gl/');
-				solvedContent.push(googleMapsIds[tile]);
-				solvedContent.push('">mapa</a></div></div>');
-			}
-			var solvedGroup = document.createElement("div");
-			solvedGroup.innerHTML = solvedContent.join("");
-			solvedGroup.className = "solved-group";
-			solvedContainer.appendChild(solvedGroup);
-			selectedTileCount = 0;
-			submitButton.disabled = true;
-			if (++solvedDistrictCount === 4) {
-				alert("Gratulujeme!");
-			}
-		}
-		else {
-			alert("Tieto 4 miesta sú spolu, ale patria do inej mestskej časti.");
-		}
+		foundGroup = puzzleGroups[selectedTiles[0]];
+		districtForm.style = "display: block";
+		submitButton.style = "display: none";
 	}
 	else {
 		if (maxGroupCount === 1) alert("Žiadne z týchto miest nie sú spolu.");
 		else alert("O " + (4 - maxGroupCount).toString() + " vedľa!");
+	}
+}
+
+function handleDistrictSubmit(form) {
+	if (form.elements["district"].value === puzzleDistricts[foundGroup]) {
+		var solvedContainer = document.getElementById("solved");
+		var solvedContent = [
+			"<p>", districts[puzzleDistricts[foundGroup]], " (",
+			difficulties[foundGroup], ")</p>"
+		];
+		for (var tile = 0; tile < 16; tile++) {
+			if (puzzleGroups[tile] !== foundGroup) continue;
+			document.getElementById("tile-" + tile.toString()).remove();
+			solvedContent.push('<div class="tile"><img src="');
+			solvedContent.push(puzzleNumber);
+			solvedContent.push('/');
+			solvedContent.push(toTwoDigits(tile + 1));
+			solvedContent.push('_thumb.jpg"><div class="tile-buttons"><a target="blank" href="');
+			solvedContent.push(puzzleNumber);
+			solvedContent.push('/');
+			solvedContent.push(toTwoDigits(tile + 1));
+			solvedContent.push('.jpg">↗</a> <a target="blank" href="https://maps.app.goo.gl/');
+			solvedContent.push(googleMapsIds[tile]);
+			solvedContent.push('">mapa</a></div></div>');
+		}
+		var solvedGroup = document.createElement("div");
+		solvedGroup.innerHTML = solvedContent.join("");
+		solvedGroup.className = "solved-group";
+		solvedContainer.appendChild(solvedGroup);
+		selectedTileCount = 0;
+		districtForm.style = "display: none";
+		if (++solvedDistrictCount === 4) {
+			alert("Gratulujeme!");
+		}
+		else {
+			submitButton.disabled = true;
+			submitButton.style = "display: inline-block";
+		}
+	}
+	else {
+		alert("Nesprávna mestská časť.");
 	}
 }
