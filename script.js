@@ -12,6 +12,7 @@ for (
 }
 var difficulties = ["ľahké", "stredné", "ťažké", "expert"];
 var puzzleNumber = document.getElementById("puzzle-number").innerHTML;
+var mistakeCount = 0;
 
 var selectedTileCount = 0;
 var solvedDistrictCount = 0;
@@ -59,6 +60,7 @@ function handleSubmit(form) {
 		submitButton.style = "display: none";
 	}
 	else {
+		mistakeCount++;
 		if (maxGroupCount === 1) alert("Žiadne z týchto miest nie sú spolu.");
 		else alert("O " + (4 - maxGroupCount).toString() + " vedľa!");
 	}
@@ -93,7 +95,9 @@ function handleDistrictSubmit(form) {
 		selectedTileCount = 0;
 		districtForm.style = "display: none";
 		if (++solvedDistrictCount === 4) {
-			alert("Gratulujeme!");
+			alert("Gratulujem, vyriešil(a) si to s " + mistakeCount + (
+				mistakeCount === 1 ? " chybou." : " chybami."
+			));
 		}
 		else {
 			submitButton.disabled = true;
@@ -101,6 +105,7 @@ function handleDistrictSubmit(form) {
 		}
 	}
 	else {
+		mistakeCount++;
 		alert("Nesprávna mestská časť.");
 	}
 }
