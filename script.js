@@ -12,13 +12,23 @@ for (
 }
 var difficulties = ["ľahké", "stredné", "ťažké", "expert"];
 var puzzleNumber = document.getElementById("puzzle-number").innerHTML;
-var mistakeCount = 0;
+var attemptCount = 0;
 
 var selectedTileCount = 0;
 var solvedDistrictCount = 0;
 var foundGroup = null;
 var submitButton = document.getElementById("submit");
 var districtForm = document.getElementById("district-form");
+var attemptCounter = document.getElementById("attempt-counter");
+
+function updateAttemptCount() {
+	attemptCount++;
+	attemptCounter.innerHTML = attemptCount.toString() + " " + (
+		attemptCount === 1 ? "pokus" :
+		attemptCount < 5 ? "pokusy" :
+		"pokusov"
+	)
+}
 
 function handleInput(event) {
 	if (foundGroup !== null) {
@@ -60,13 +70,14 @@ function handleSubmit(form) {
 		submitButton.style = "display: none";
 	}
 	else {
-		mistakeCount++;
+		updateAttemptCount();
 		if (maxGroupCount === 1) alert("Žiadne z týchto miest nie sú spolu.");
 		else alert("O " + (4 - maxGroupCount).toString() + " vedľa!");
 	}
 }
 
 function handleDistrictSubmit(form) {
+	updateAttemptCount();
 	if (form.elements["district"].value === puzzleDistricts[foundGroup]) {
 		var solvedContainer = document.getElementById("solved");
 		var solvedContent = [
@@ -95,9 +106,7 @@ function handleDistrictSubmit(form) {
 		selectedTileCount = 0;
 		districtForm.style = "display: none";
 		if (++solvedDistrictCount === 4) {
-			alert("Gratulujem, vyriešil(a) si to s " + mistakeCount + (
-				mistakeCount === 1 ? " chybou." : " chybami."
-			));
+			alert("Gratulujeme!");
 		}
 		else {
 			submitButton.disabled = true;
@@ -105,7 +114,6 @@ function handleDistrictSubmit(form) {
 		}
 	}
 	else {
-		mistakeCount++;
 		alert("Nesprávna mestská časť.");
 	}
 }
