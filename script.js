@@ -13,6 +13,7 @@ for (
 var difficulties = ["ľahké", "stredné", "ťažké", "expert"];
 var puzzleNumber = document.getElementById("puzzle-number").innerHTML;
 var attemptCount = 0;
+var attempts = {};
 
 var selectedTileCount = 0;
 var solvedDistrictCount = 0;
@@ -48,11 +49,21 @@ function handleInput(event) {
 	}
 }
 
+function alertAlreadyTried(message, wasTried) {
+	if (wasTried) alert("Túto kombináciu si už skúšal(a). " + message);
+	else alert(message);
+}
+
 function handleSubmit(form) {
 	var selectedTiles = [];
+	var selectedMask = 0;
 	for (var i = 0; i < form.length; i++) {
 		var elem = form.elements[i];
-		if (elem.checked) selectedTiles.push(parseInt(elem.name));
+		if (elem.checked) {
+			var tileNumber = parseInt(elem.name)
+			selectedTiles.push(tileNumber);
+			selectedMask |= 1 << tileNumber;
+		}
 	}
 	if (selectedTiles.length !== 4) {
 		alert("Nesprávny počet vybratých miest, majú byť 4.");
@@ -70,14 +81,21 @@ function handleSubmit(form) {
 		submitButton.style = "display: none";
 	}
 	else {
-		updateAttemptCount();
-		if (maxGroupCount === 1) alert("Žiadne z týchto miest nie sú spolu.");
-		else alert("O " + (4 - maxGroupCount).toString() + " vedľa!");
+		var alreadyTried = attempts[selectedMask];
+		if (!alreadyTried) updateAttemptCount();
+		if (maxGroupCount === 1) alertAlreadyTried("Žiadne z týchto miest nie sú spolu.", alreadyTried);
+		else alertAlreadyTried("O " + (4 - maxGroupCount).toString() + " vedľa!", alreadyTried);
+		attempts[selectedMask] = true;
 	}
 }
 
 function handleDistrictSubmit(form) {
-	updateAttemptCount();
+	var selectedMask = foundGroup.toString() + form.elements["district"].value;
+	var alreadyTried = attempts[selectedMask];
+	if (!alreadyTried) {
+		updateAttemptCount();
+		attempts[selectedMask] = true;
+	}
 	if (form.elements["district"].value === puzzleDistricts[foundGroup]) {
 		var solvedContainer = document.getElementById("solved");
 		var solvedContent = [
@@ -114,6 +132,6 @@ function handleDistrictSubmit(form) {
 		}
 	}
 	else {
-		alert("Nesprávna mestská časť.");
+		alertAlreadyTried("Nesprávna mestská časť.", alreadyTried);
 	}
 }
