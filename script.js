@@ -113,7 +113,8 @@ function handleDistrictSubmit(form) {
 			solvedContent.push(puzzleNumber);
 			solvedContent.push('/');
 			solvedContent.push(toTwoDigits(tile + 1));
-			solvedContent.push('.jpg">↗</a> <a target="blank" href="https://maps.app.goo.gl/');
+			solvedContent.push('.jpg">↗</a> <a target="blank" href="');
+			if (googleMapsIds[tile].slice(0, 8) !== "https://") solvedContent.push("https://maps.app.goo.gl/");
 			solvedContent.push(googleMapsIds[tile]);
 			solvedContent.push('">mapa</a></div></div>');
 		}
